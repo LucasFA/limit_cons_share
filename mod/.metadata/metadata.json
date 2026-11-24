@@ -1,0 +1,14 @@
+{
+  "name" : "Government Construction Cap",
+  "id" : "com.github.lucasfa.limit_cons_share",
+  "version" : "0.1.0",
+  "game_id" : "victoria3",
+  "picture" : "thumbnail.png",
+  "supported_game_version" : "1.15.*",
+  "short_description" : "Adds a budget panel setting that caps how much of your construction capacity the government may use, without touching the private sector's share.",
+  "tags" : ["Economy and Buildings", "Utilities"],
+  "relationships" : [],
+  "game_custom_data" : {
+    "multiplayer_synchronized" : true
+  }
+}

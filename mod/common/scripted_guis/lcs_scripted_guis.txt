@@ -1,0 +1,49 @@
+﻿# Used by the Government Construction Cap control in the budget panel (gui/lcs_construction_cap.gui).
+
+# Sets the cap to scope:lcs_value (percent, passed in from the GUI with MakeScopeValue)
+lcs_set_cap_sgui = {
+	scope = country
+	saved_scopes = { lcs_value }
+
+	is_valid = {
+		is_player = yes
+	}
+
+	effect = {
+		set_variable = {
+			name = lcs_cap
+			value = {
+				value = scope:lcs_value
+				min = 0
+				max = 100
+			}
+		}
+		lcs_on_cap_changed = yes
+	}
+}
+
+lcs_lower_cap_sgui = {
+	scope = country
+
+	is_valid = {
+		is_player = yes
+		lcs_cap_percent > 0
+	}
+
+	effect = {
+		lcs_change_cap = { AMOUNT = -5 }
+	}
+}
+
+lcs_raise_cap_sgui = {
+	scope = country
+
+	is_valid = {
+		is_player = yes
+		lcs_cap_percent < 100
+	}
+
+	effect = {
+		lcs_change_cap = { AMOUNT = 5 }
+	}
+}

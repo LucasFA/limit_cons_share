@@ -1,0 +1,42 @@
+﻿on_game_started = {
+	on_actions = {
+		on_lcs_start
+	}
+}
+
+on_lcs_start = {
+	effect = {
+		set_global_variable = {
+			name = lcs_is_loaded
+			value = yes
+		}
+	}
+}
+
+# Safety net for the weekly recalculation chain (lcs.2): restart it if it has stopped
+# while a cap is set, and clean up countries that are no longer player controlled.
+on_monthly_pulse_country = {
+	on_actions = {
+		on_lcs_monthly_pulse_country
+	}
+}
+
+on_lcs_monthly_pulse_country = {
+	trigger = {
+		OR = {
+			has_variable = lcs_cap
+			has_variable = lcs_withheld
+			has_variable = lcs_reserved
+		}
+	}
+	effect = {
+		if = {
+			limit = { is_player = no }
+			lcs_clear_construction_cap = yes
+		}
+		else_if = {
+			limit = { lcs_cap_percent < 100 }
+			lcs_ensure_weekly_update = yes
+		}
+	}
+}

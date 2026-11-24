@@ -1,0 +1,114 @@
+﻿# All values are evaluated in country scope.
+
+# How many construction points per week we assume each queued private project can absorb,
+# as a multiple of Max Weekly Construction Progress. Raise this if private construction
+# appears throttled while the cap is active; lower it if the government exceeds the cap.
+lcs_private_demand_per_project_factor = 1
+
+# The configured cap as a percentage (0-100). 100 = no cap.
+lcs_cap_percent = {
+	value = 100
+	if = {
+		limit = { has_variable = lcs_cap }
+		value = var:lcs_cap
+	}
+}
+
+# Points currently withheld by lcs_construction_withheld
+lcs_withheld_points = {
+	value = 0
+	if = {
+		limit = { has_variable = lcs_withheld }
+		value = var:lcs_withheld
+	}
+}
+
+# Private allocation currently added by lcs_private_construction_reserved
+lcs_reserved_allocation = {
+	value = 0
+	if = {
+		limit = { has_variable = lcs_reserved }
+		value = var:lcs_reserved
+	}
+}
+
+# Construction the country would produce without this mod
+lcs_nominal_construction = {
+	value = modifier:country_construction_add
+	add = lcs_withheld_points
+	min = 0
+}
+
+# Private construction allocation the country would have without this mod
+lcs_nominal_private_allocation = {
+	value = modifier:country_private_construction_allocation_mult
+	subtract = lcs_reserved_allocation
+	min = 0
+	max = 1
+}
+
+# Rough estimate of how much construction the private queue can absorb this week:
+# every queued private project can take at most Max Weekly Construction Progress.
+lcs_private_demand_estimate = {
+	value = num_queued_private_constructions
+	multiply = modifier:country_max_weekly_construction_progress_add
+	multiply = lcs_private_demand_per_project_factor
+	min = 0
+}
+
+### The values below are only valid inside lcs_update_construction_cap, which sets
+### lcs_base (nominal construction) and lcs_base_alloc (nominal private allocation).
+
+# Most construction the government may use: cap% of nominal construction
+lcs_government_limit = {
+	value = var:lcs_base
+	multiply = lcs_cap_percent
+	divide = 100
+}
+
+# What the government is guaranteed in vanilla when private construction uses its full
+# allocation, but no more than the cap
+lcs_government_floor = {
+	value = 1
+	subtract = var:lcs_base_alloc
+	multiply = var:lcs_base
+	max = lcs_government_limit
+	min = 0
+}
+
+# Construction set aside for the private sector: its estimated demand, but never so much
+# that the government drops below its floor
+lcs_private_reservation = {
+	value = var:lcs_base
+	subtract = lcs_government_floor
+	max = lcs_private_demand_estimate
+	min = 0
+}
+
+# Total construction to leave active: government limit + private reservation
+lcs_target_construction = {
+	value = lcs_government_limit
+	add = lcs_private_reservation
+	max = var:lcs_base
+	min = 0
+}
+
+# Private allocation needed so private construction gets its reservation first
+lcs_target_private_allocation = {
+	value = var:lcs_base_alloc
+	if = {
+		limit = { lcs_target_construction > 0 }
+		value = lcs_private_reservation
+		divide = lcs_target_construction
+		max = 1
+		min = var:lcs_base_alloc
+	}
+}
+
+### Display only (safe to evaluate at any time)
+
+lcs_display_government_limit = {
+	value = lcs_nominal_construction
+	multiply = lcs_cap_percent
+	divide = 100
+}

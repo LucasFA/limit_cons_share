@@ -1,0 +1,53 @@
+﻿namespace = lcs_error_suppression
+
+lcs_error_suppression.0001 = {
+	hidden = yes
+	orphan = yes
+	trigger = {
+		exists = global_var:lcs_is_loaded
+	}
+}
+
+namespace = lcs
+
+# Recalculates the construction cap the day after the player changed it.
+# Delayed by a day so the country's modifiers have refreshed since the last recalculation.
+lcs.1 = {
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		remove_variable = lcs_recalc_pending
+		if = {
+			limit = { is_player = yes }
+			lcs_update_construction_cap = yes
+		}
+	}
+}
+
+# Weekly recalculation. Reschedules itself while the cap is in use.
+lcs.2 = {
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		remove_variable = lcs_weekly_running
+		if = {
+			limit = { is_player = yes }
+			lcs_update_construction_cap = yes
+			if = {
+				limit = {
+					OR = {
+						lcs_cap_percent < 100
+						has_variable = lcs_withheld
+						has_variable = lcs_reserved
+					}
+				}
+				lcs_ensure_weekly_update = yes
+			}
+		}
+		else = {
+			lcs_clear_construction_cap = yes
+		}
+	}
+}

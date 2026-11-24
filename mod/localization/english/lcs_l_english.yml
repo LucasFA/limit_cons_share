@@ -1,0 +1,10 @@
+﻿l_english:
+ LCS_CAP_LABEL: "Government cap: [SelectLocalization( EqualTo_CFixedPoint( GetPlayer.MakeScope.ScriptValue('lcs_cap_percent'), '(CFixedPoint)100' ), 'LCS_CAP_OFF', 'LCS_CAP_VALUE' )]"
+ LCS_CAP_VALUE: "#v [GetPlayer.MakeScope.ScriptValue('lcs_cap_percent')|0]%#!"
+ LCS_CAP_OFF: "#v Off#!"
+ LCS_CAP_TOOLTIP: "#header Government Construction Cap: [GetPlayer.MakeScope.ScriptValue('lcs_cap_percent')|0]%#!\n$TOOLTIP_DELIMITER$\n[Concept('concept_government_construction', '$concept_government_constructions|q$')] may use at most this share of our nominal @construction![concept_construction], however much the private sector is building at the moment. [Concept('concept_private_construction', '$concept_private_constructions|q$')] keeps the share it would otherwise get. Construction the government may not use and the private sector does not need is held back, so nobody pays for its goods.\n\nClick the bar to set the cap, or use the buttons to change it by 5%. At #v 100%#! the cap is off. Changes take effect tomorrow, and the cap is recalculated weekly.\n$TOOLTIP_DELIMITER$\nGovernment limit: @construction! #v [GetPlayer.MakeScope.ScriptValue('lcs_display_government_limit')|0]#! of #v [GetPlayer.MakeScope.ScriptValue('lcs_nominal_construction')|0]#! nominal\nGovernment uses: @construction! #v [GetPlayer.CalcUsedGovernmentConstruction|0]#!\nPrivate sector uses: @construction! #v [GetPlayer.CalcUsedPrivateConstruction|0]#!\nActive: @construction! #v [GetPlayer.CalcBaseConstructionSpeed|0]#! (#v [GetPlayer.MakeScope.ScriptValue('lcs_withheld_points')|0]#! held back)"
+ LCS_CAP_LOWER_TOOLTIP: "Lower the [concept_government_construction] cap by 5%"
+ LCS_CAP_RAISE_TOOLTIP: "Raise the [concept_government_construction] cap by 5%"
+
+ lcs_construction_withheld: "Government Construction Cap"
+ lcs_private_construction_reserved: "Private Construction Reserved"

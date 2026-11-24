@@ -1,0 +1,244 @@
+﻿# Government Construction Cap control, shown in the budget panel under the
+# Pause/Resume All Construction buttons (see the one-line hook in gui/budget_panel.gui).
+
+types lcs_construction_cap_types
+{
+	type lcs_construction_cap_control = flowcontainer {
+		name = "lcs_construction_cap_control"
+		direction = horizontal
+		spacing = 6
+		margin_bottom = 10
+		datacontext = "[GetPlayer]"
+
+		textbox = {
+			size = { 150 28 }
+			parentanchor = vcenter
+			text = "LCS_CAP_LABEL"
+			tooltip = "LCS_CAP_TOOLTIP"
+			using = tooltip_above
+			align = left|nobaseline
+			elide = right
+			fontsize_min = 12
+		}
+
+		button_icon_minus_action = {
+			size = { 28 28 }
+			parentanchor = vcenter
+			tooltip = "LCS_CAP_LOWER_TOOLTIP"
+			using = tooltip_above
+			onclick = "[GetScriptedGui('lcs_lower_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+			enabled = "[GetScriptedGui('lcs_lower_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+		}
+
+		# Clickable bar: 20 segments of 5%
+		widget = {
+			size = { 240 22 }
+			parentanchor = vcenter
+			tooltip = "LCS_CAP_TOOLTIP"
+			using = tooltip_above
+
+			default_progressbar_horizontal = {
+				size = { 100% 100% }
+				blockoverride "values" {
+					min = 0
+					max = 100
+					value = "[FixedPointToFloat( GetPlayer.MakeScope.ScriptValue('lcs_cap_percent') )]"
+				}
+			}
+
+			flowcontainer = {
+				direction = horizontal
+				spacing = 0
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)5' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)5' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)10' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)10' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)15' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)15' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)20' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)20' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)25' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)25' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)30' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)30' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)35' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)35' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)40' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)40' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)45' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)45' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)50' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)50' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)55' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)55' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)60' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)60' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)65' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)65' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)70' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)70' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)75' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)75' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)80' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)80' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)85' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)85' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)90' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)90' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)95' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)95' ) ).End )]"
+				}
+
+				button = {
+					size = { 12 22 }
+					texture = "gfx/interface/icons/generic_icons/transparent.dds"
+					tooltip = "LCS_CAP_TOOLTIP"
+					using = tooltip_above
+					onclick = "[GetScriptedGui('lcs_set_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)100' ) ).End )]"
+					enabled = "[GetScriptedGui('lcs_set_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope( 'lcs_value', MakeScopeValue( '(CFixedPoint)100' ) ).End )]"
+				}
+			}
+		}
+
+		button_icon_plus_action = {
+			size = { 28 28 }
+			parentanchor = vcenter
+			tooltip = "LCS_CAP_RAISE_TOOLTIP"
+			using = tooltip_above
+			onclick = "[GetScriptedGui('lcs_raise_cap_sgui').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+			enabled = "[GetScriptedGui('lcs_raise_cap_sgui').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+		}
+	}
+}

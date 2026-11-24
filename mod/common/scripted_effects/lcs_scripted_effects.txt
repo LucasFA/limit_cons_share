@@ -1,0 +1,123 @@
+﻿# Country scope. Removes the modifiers this mod applies.
+lcs_remove_construction_cap_modifiers = {
+	remove_modifier = lcs_construction_withheld
+	remove_modifier = lcs_private_construction_reserved
+	remove_variable = lcs_withheld
+	remove_variable = lcs_reserved
+}
+
+# Country scope. Removes everything this mod applies, except the configured cap.
+lcs_clear_construction_cap = {
+	lcs_remove_construction_cap_modifiers = yes
+	remove_variable = lcs_base
+	remove_variable = lcs_base_alloc
+	remove_variable = lcs_updated_recently
+}
+
+# Country scope. Recomputes how much construction to withhold so that the government
+# uses at most lcs_cap percent of the country's nominal construction, and how much
+# private allocation to add so the private sector is unaffected.
+#
+# Let C = nominal construction, a = nominal private allocation, X = cap, D = estimated
+# private demand. Then:
+#   government limit  G = X * C
+#   government floor  F = min(G, (1 - a) * C)
+#   private reserve   P = min(D, C - F)
+#   active capacity   C' = min(C, G + P)     -> withhold C - C'
+#   private alloc     a' = clamp(P / C', a, 1)
+# Private projects take their reserve first, so the government is left with C' - P <= G.
+lcs_update_construction_cap = {
+	# Modifier changes only show up in modifier:... after the country's modifiers refresh,
+	# so never recalculate twice on the same day (lcs_nominal_* would read stale values).
+	if = {
+		limit = { NOT = { has_variable = lcs_updated_recently } }
+		set_variable = { name = lcs_updated_recently days = 1 }
+		lcs_update_construction_cap_now = yes
+	}
+}
+
+lcs_update_construction_cap_now = {
+	# Must be computed before the variables below change
+	set_variable = { name = lcs_base value = lcs_nominal_construction }
+	set_variable = { name = lcs_base_alloc value = lcs_nominal_private_allocation }
+
+	if = {
+		limit = {
+			OR = {
+				lcs_cap_percent >= 100
+				var:lcs_base <= 0
+			}
+		}
+		lcs_remove_construction_cap_modifiers = yes
+	}
+	else = {
+		set_variable = {
+			name = lcs_withheld
+			value = {
+				value = var:lcs_base
+				subtract = lcs_target_construction
+				min = 0
+			}
+		}
+		set_variable = {
+			name = lcs_reserved
+			value = {
+				value = lcs_target_private_allocation
+				subtract = var:lcs_base_alloc
+				min = 0
+			}
+		}
+
+		remove_modifier = lcs_construction_withheld
+		if = {
+			limit = { var:lcs_withheld > 0 }
+			add_modifier = {
+				name = lcs_construction_withheld
+				multiplier = var:lcs_withheld
+			}
+		}
+
+		remove_modifier = lcs_private_construction_reserved
+		if = {
+			limit = { var:lcs_reserved > 0 }
+			add_modifier = {
+				name = lcs_private_construction_reserved
+				multiplier = var:lcs_reserved
+			}
+		}
+	}
+}
+
+# Country scope. Called whenever the player changes the cap.
+lcs_on_cap_changed = {
+	# Recalculate tomorrow, once the country's modifiers have refreshed
+	if = {
+		limit = { NOT = { has_variable = lcs_recalc_pending } }
+		set_variable = { name = lcs_recalc_pending days = 2 }
+		trigger_event = { id = lcs.1 days = 1 }
+	}
+	lcs_ensure_weekly_update = yes
+}
+
+# Country scope. Starts the weekly recalculation chain (lcs.2) if it is not running.
+lcs_ensure_weekly_update = {
+	if = {
+		limit = { NOT = { has_variable = lcs_weekly_running } }
+		set_variable = { name = lcs_weekly_running days = 9 }
+		trigger_event = { id = lcs.2 days = 7 }
+	}
+}
+
+# Country scope. $AMOUNT$ may be negative.
+lcs_change_cap = {
+	set_variable = {
+		name = lcs_cap
+		value = {
+			value = lcs_cap_percent
+			add = $AMOUNT$
+			min = 0
+			max = 100
+		}
+	}
+	lcs_on_cap_changed = yes
+}
