@@ -1,7 +1,9 @@
-﻿# Applied with multiplier = construction points withheld from the government.
-lcs_construction_withheld = {
+﻿# Applied with multiplier = construction sector throughput removed. Throughput scales both the
+# goods Construction Sectors consume and the construction they produce, so held-back
+# construction costs nothing in goods (wages are still paid).
+lcs_construction_throttle = {
 	icon = gfx/interface/icons/timed_modifier_icons/modifier_gear_negative.dds
-	country_construction_add = -1
+	building_construction_sector_throughput_add = -1
 }
 
 # Applied with multiplier = extra private allocation (fraction) needed so the private

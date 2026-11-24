@@ -14,13 +14,38 @@ lcs_cap_percent = {
 	}
 }
 
-# Points currently withheld by lcs_construction_withheld
+# Construction points currently held back (display only; set by lcs_update_construction_cap)
 lcs_withheld_points = {
 	value = 0
 	if = {
 		limit = { has_variable = lcs_withheld }
 		value = var:lcs_withheld
 	}
+}
+
+# Construction sector throughput currently removed by lcs_construction_throttle
+lcs_throttle_applied = {
+	value = 0
+	if = {
+		limit = { has_variable = lcs_throttle }
+		value = var:lcs_throttle
+	}
+}
+
+# Construction sector throughput factor without this mod: 1 + country-level throughput bonuses.
+# (Per-building/state throughput effects are not visible here; the weekly update corrects for them.)
+lcs_nominal_throughput_factor = {
+	value = 1
+	add = modifier:building_construction_sector_throughput_add
+	add = lcs_throttle_applied
+	min = 0.01
+}
+
+# Construction sector throughput factor right now, including this mod's throttle
+lcs_current_throughput_factor = {
+	value = lcs_nominal_throughput_factor
+	subtract = lcs_throttle_applied
+	min = 0.01
 }
 
 # Private allocation currently added by lcs_private_construction_reserved
@@ -32,10 +57,38 @@ lcs_reserved_allocation = {
 	}
 }
 
-# Construction the country would produce without this mod
-lcs_nominal_construction = {
+# Lowest construction sector throughput factor the mod will set, as a fraction of nominal.
+# Keeps a little sector output so nominal construction can still be inferred from it.
+lcs_min_throughput_fraction = 0.05
+
+# Construction not produced by Construction Sectors, which throughput does not affect.
+# Approximated by the GDP-based static modifier country_gdp_construction (country_construction_add = 10,
+# scaled by GDP as described in 00_code_static_modifiers.txt). Traits etc. are ignored.
+lcs_non_sector_construction = {
+	value = gdp
+	divide = define:NEconomy|COUNTRY_GDP_CONSTRUCTION_MODIFIER_DIVISOR
+	multiply = define:NEconomy|COUNTRY_GDP_CONSTRUCTION_MODIFIER_SCALED_MULTIPLIER
+	add = define:NEconomy|COUNTRY_GDP_CONSTRUCTION_MODIFIER_BASE_MULTIPLIER
+	max = define:NEconomy|COUNTRY_GDP_CONSTRUCTION_MODIFIER_MAX_MULTIPLIER
+	min = 0
+	multiply = 10
+	max = modifier:country_construction_add
+}
+
+# Construction currently produced by Construction Sectors (after the throttle)
+lcs_current_sector_construction = {
 	value = modifier:country_construction_add
-	add = lcs_withheld_points
+	subtract = lcs_non_sector_construction
+	min = 0
+}
+
+# Construction the country would produce without this mod. Throughput scales construction
+# sector output linearly, so undo the throttle by the ratio of the throughput factors.
+lcs_nominal_construction = {
+	value = lcs_current_sector_construction
+	multiply = lcs_nominal_throughput_factor
+	divide = lcs_current_throughput_factor
+	add = lcs_non_sector_construction
 	min = 0
 }
 
@@ -102,6 +155,33 @@ lcs_target_private_allocation = {
 		divide = lcs_target_construction
 		max = 1
 		min = var:lcs_base_alloc
+	}
+}
+
+# Construction sector throughput to remove so that total construction drops to
+# lcs_target_construction. Sector output scales linearly with the throughput factor:
+#   new factor = current factor * (target - non-sector) / current sector construction
+# Starting from the current state means that if construction is already on target the throttle
+# stays put, so throughput the model cannot see (per-building or state bonuses) is corrected
+# over the following weeks.
+lcs_target_throttle = {
+	value = 0
+	if = {
+		limit = { var:lcs_cur_sector > 0 }
+		value = var:lcs_nom_factor
+		subtract = {
+			value = lcs_target_construction
+			subtract = var:lcs_non_sector
+			min = 0
+			multiply = var:lcs_cur_factor
+			divide = var:lcs_cur_sector
+		}
+		min = 0
+		max = {
+			value = 1
+			subtract = lcs_min_throughput_fraction
+			multiply = var:lcs_nom_factor
+		}
 	}
 }
 

@@ -1,7 +1,8 @@
 ﻿# Country scope. Removes the modifiers this mod applies.
 lcs_remove_construction_cap_modifiers = {
-	remove_modifier = lcs_construction_withheld
+	remove_modifier = lcs_construction_throttle
 	remove_modifier = lcs_private_construction_reserved
+	remove_variable = lcs_throttle
 	remove_variable = lcs_withheld
 	remove_variable = lcs_reserved
 }
@@ -11,10 +12,14 @@ lcs_clear_construction_cap = {
 	lcs_remove_construction_cap_modifiers = yes
 	remove_variable = lcs_base
 	remove_variable = lcs_base_alloc
+	remove_variable = lcs_nom_factor
+	remove_variable = lcs_cur_factor
+	remove_variable = lcs_cur_sector
+	remove_variable = lcs_non_sector
 	remove_variable = lcs_updated_recently
 }
 
-# Country scope. Recomputes how much construction to withhold so that the government
+# Country scope. Recomputes how much construction to hold back so that the government
 # uses at most lcs_cap percent of the country's nominal construction, and how much
 # private allocation to add so the private sector is unaffected.
 #
@@ -23,9 +28,12 @@ lcs_clear_construction_cap = {
 #   government limit  G = X * C
 #   government floor  F = min(G, (1 - a) * C)
 #   private reserve   P = min(D, C - F)
-#   active capacity   C' = min(C, G + P)     -> withhold C - C'
+#   active capacity   C' = min(C, G + P)     -> hold back C - C'
 #   private alloc     a' = clamp(P / C', a, 1)
 # Private projects take their reserve first, so the government is left with C' - P <= G.
+#
+# Construction is held back by lowering Construction Sector throughput, which lowers the
+# goods they consume along with the construction they produce.
 lcs_update_construction_cap = {
 	# Modifier changes only show up in modifier:... after the country's modifiers refresh,
 	# so never recalculate twice on the same day (lcs_nominal_* would read stale values).
@@ -37,7 +45,11 @@ lcs_update_construction_cap = {
 }
 
 lcs_update_construction_cap_now = {
-	# Must be computed before the variables below change
+	# Snapshot the current state; must happen before lcs_throttle/lcs_reserved change
+	set_variable = { name = lcs_non_sector value = lcs_non_sector_construction }
+	set_variable = { name = lcs_cur_sector value = lcs_current_sector_construction }
+	set_variable = { name = lcs_nom_factor value = lcs_nominal_throughput_factor }
+	set_variable = { name = lcs_cur_factor value = lcs_current_throughput_factor }
 	set_variable = { name = lcs_base value = lcs_nominal_construction }
 	set_variable = { name = lcs_base_alloc value = lcs_nominal_private_allocation }
 
@@ -59,6 +71,7 @@ lcs_update_construction_cap_now = {
 				min = 0
 			}
 		}
+		set_variable = { name = lcs_throttle value = lcs_target_throttle }
 		set_variable = {
 			name = lcs_reserved
 			value = {
@@ -68,12 +81,12 @@ lcs_update_construction_cap_now = {
 			}
 		}
 
-		remove_modifier = lcs_construction_withheld
+		remove_modifier = lcs_construction_throttle
 		if = {
-			limit = { var:lcs_withheld > 0 }
+			limit = { var:lcs_throttle > 0 }
 			add_modifier = {
-				name = lcs_construction_withheld
-				multiplier = var:lcs_withheld
+				name = lcs_construction_throttle
+				multiplier = var:lcs_throttle
 			}
 		}
 
@@ -87,6 +100,7 @@ lcs_update_construction_cap_now = {
 		}
 	}
 }
+
 
 # Country scope. Called whenever the player changes the cap.
 lcs_on_cap_changed = {

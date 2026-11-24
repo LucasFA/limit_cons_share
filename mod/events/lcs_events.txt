@@ -39,7 +39,7 @@ lcs.2 = {
 				limit = {
 					OR = {
 						lcs_cap_percent < 100
-						has_variable = lcs_withheld
+						has_variable = lcs_throttle
 						has_variable = lcs_reserved
 					}
 				}

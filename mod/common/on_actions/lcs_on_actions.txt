@@ -25,7 +25,7 @@ on_lcs_monthly_pulse_country = {
 	trigger = {
 		OR = {
 			has_variable = lcs_cap
-			has_variable = lcs_withheld
+			has_variable = lcs_throttle
 			has_variable = lcs_reserved
 		}
 	}
