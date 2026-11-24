@@ -14,8 +14,9 @@ It implements this request on r/victoria3:
 
 ## Usage
 
-Open the **Budget** panel. Under **Goods for Construction**, below the Pause/Resume All
-Construction button, there is a **Government cap** control:
+The **Government cap** control appears in two places: the **Budget** panel under **Goods
+for Construction** (below Pause/Resume All Construction), and **Construction > National
+Queue** (below the construction sector row with the pause button):
 
 ```
 Government cap: 60%   (−) [■■■■■■■■■■■■□□□□□□□□] (+)
@@ -50,16 +51,43 @@ active capacity    C' = min(C, G + P)          # the rest (C − C') is held bac
 private allocation a' = clamp(P / C', a, 1)
 ```
 
-Two static modifiers apply this: `lcs_construction_withheld` (−1 construction, applied
-with multiplier `C − C'`) and `lcs_private_construction_reserved` (+100% private
-allocation, applied with multiplier `a' − a`). Private projects get their reserve first,
-so the government is left with at most `C' − P ≤ G`.
+Two static modifiers apply this:
 
-Construction that is held back is never produced, so nobody buys construction goods for
-it. Construction sector wages are still paid, as with any idle capacity. You keep your
-sectors and can lift the cap at any time.
+- `lcs_construction_throttle`: −100% Construction Sector throughput, applied with a
+  multiplier that brings total construction down to `C'`. As far as observed in-game, a
+  sector's goods cost is its full input (set by workforce and throughput) times the share of
+  its produced construction that is actually used: nothing built, no goods bought. A flat
+  −construction modifier shrinks output but not inputs, so the cost per point rises and
+  spending doesn't fall (an earlier version of this mod made that mistake). Throughput
+  scales inputs and output together, so the cost per point stays the same and spending
+  falls with output. Construction sector wages are still paid.
+- `lcs_private_construction_reserved`: +100% private allocation, applied with multiplier
+  `a' − a`. Private projects get their reserve first, so the government is left with at
+  most `C' − P ≤ G`.
+
+The throttle is computed from the current state each week. Sector output is assumed
+proportional to the throughput factor `1 + T`, where `T` is the country's construction
+sector throughput bonus:
+
+```
+non-sector construction  N = GDP-based country_gdp_construction (≤ 10)
+nominal construction     C = N + (current − N) · (1 + T) / (1 + T − throttle)
+new throttle               = (1 + T) − (1 + T − throttle) · (C' − N) / (current − N)
+```
+
+If construction is already on target, the throttle stays put. So throughput the mod can't
+see (per-building or state bonuses) gets corrected over the next weeks. The throttle never
+takes sector output below 5% of nominal (`lcs_min_throughput_fraction`).
+
+You keep your sectors and can lift the cap at any time.
 
 ### Limitations
+
+- Throttling relies on Construction Sector throughput scaling construction output linearly,
+  which is what vanilla techs giving sector throughput rely on. If the engine clamps
+  throughput at some minimum, very low caps won't be reached.
+- Lower throughput may also lower the small State Construction Efficiency bonus that
+  Construction Sectors give their own state.
 
 - `D` is an estimate. Script cannot read actual private usage (only the UI can), so the
   mod assumes every queued private project can absorb Max Weekly Construction Progress
@@ -72,17 +100,23 @@ sectors and can lift the cap at any time.
   control's tooltip shows the nominal amount.
 - Only player countries can set a cap. When a country stops being player controlled, its
   modifiers are removed at the next weekly or monthly update.
-- **Compatibility:** the control is added by overriding vanilla `gui/budget_panel.gui`.
-  The only change is two lines (a comment and `lcs_construction_cap_control = {}`) at the
-  end of the `second_line` block of the Goods for Construction row. The control itself
-  lives in `gui/lcs_construction_cap.gui`. Other mods that override `budget_panel.gui`
-  conflict with this one. After a game patch, copy the new vanilla file and re-add the line.
+- **Compatibility:** the control is added by overriding two vanilla files, each changed
+  only by a short hook marked `# limit_cons_share`:
+  - `gui/budget_panel.gui`: `lcs_construction_cap_control = {}` at the end of the
+    `second_line` block of the Goods for Construction row.
+  - `gui/construction_panel.gui`: `lcs_construction_cap_control = { parentanchor = hcenter }`
+    after the `construction_sector_or_no_sector` flowcontainer of the domestic queue tab.
+
+  The control itself lives in `gui/lcs_construction_cap.gui`. Other mods that override
+  either file conflict with this one. After a game patch, copy the new vanilla files and
+  re-add the hooks.
 
 ### Files
 
 | File | Purpose |
 | --- | --- |
 | `gui/budget_panel.gui` | vanilla copy + one-line hook |
+| `gui/construction_panel.gui` | vanilla copy + hook in the National Queue tab |
 | `gui/lcs_construction_cap.gui` | the cap control (label, −/+ buttons, clickable bar) |
 | `common/scripted_guis/lcs_scripted_guis.txt` | set / lower / raise the cap from the UI |
 | `common/scripted_effects/lcs_scripted_effects.txt` | the cap calculation |
@@ -106,7 +140,7 @@ Mod prefix: `lcs`.
 ### Folder structure
 
 - [mod](mod): the mod itself
-- [documentation](documentation): documentation that is not shipped with the mod
+- [documentation](documentation): documentation that is not shipped with the mod; start with [DEVELOPMENT.md](documentation/DEVELOPMENT.md)
 - [image](image): reference images and templates (from the mod template)
 - [script](script): helper scripts; `generate-localization.sh` copies the English
   localization to the other languages listed in `script/languages.txt`
