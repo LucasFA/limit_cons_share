@@ -1,5 +1,6 @@
 ﻿# Government Construction Cap control, shown in the budget panel under the
-# Pause/Resume All Construction buttons (see the one-line hook in gui/budget_panel.gui).
+# Pause/Resume All Construction buttons (hook in gui/budget_panel.gui) and in
+# Construction > National Queue under the construction sector row (hook in gui/construction_panel.gui).
 
 types lcs_construction_cap_types
 {
