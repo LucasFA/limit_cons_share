@@ -62,7 +62,7 @@ to the Workshop. (`image/templates/` is collapsed below; it only holds template 
 ```
 limit_cons_share/
 ├── README.md                     what the mod does, the formula, limitations
-├── .gitattributes                from the template (treats all files as binary)
+├── .gitattributes                disables line-ending conversion (see section 7)
 ├── .gitignore                    from the template
 ├── documentation/
 │   └── DEVELOPMENT.md            this file
@@ -246,8 +246,9 @@ stale numbers, so the mod also refuses to run twice on one day.
    `vic3-tiger --game "<Victoria 3 install>" mod`. It catches typos and unknown keys.
    It's built for 1.13.5, so it reports 2 errors and 2 warnings in vanilla parts of
    `construction_panel.gui`; those can be ignored.
-5. **Version control:** the template's `.gitattributes` marks every file as binary, so
-   `git diff` shows nothing. Delete that line to get normal diffs.
+5. **Version control:** `.gitattributes` contains `* -text`, so git never converts line
+   endings (on Windows it may otherwise switch files to CRLF). The template used
+   `* binary`, which also hid all diffs and blocked merges; that was changed.
 
 ## 8. Things learned the hard way
 
