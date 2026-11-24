@@ -57,7 +57,8 @@ buttons. Text inside `"[ ... ]"` is a **data function**: a live call into the ga
 The structure follows the
 [Victoria 3 Modding Co-op mod template](https://github.com/Victoria-3-Modding-Co-op/Mod-Template).
 Only `mod/` is the actual mod. Everything else stays in the repository and is not uploaded
-to the Workshop. (`image/templates/` is collapsed below; it only holds template images.)
+to the Workshop. The template's `image/` folder (icon templates built from game art) was
+left out because the mod does not use it.
 
 ```
 limit_cons_share/
@@ -66,10 +67,6 @@ limit_cons_share/
 ├── .gitignore                    from the template
 ├── documentation/
 │   └── DEVELOPMENT.md            this file
-├── image/                        from the template: GIMP/PNG templates for icons (unused)
-│   ├── buildings.xcf
-│   ├── production_methods.xcf
-│   └── templates/…
 ├── script/                       from the template
 │   ├── generate-localization.sh  copies English text files to the other languages
 │   └── languages.txt
@@ -269,7 +266,7 @@ stale numbers, so the mod also refuses to run twice on one day.
 | --- | --- |
 | `README.md` | Rewritten for this mod |
 | `documentation/DEVELOPMENT.md` | New |
-| `image/`, `script/`, `.gitignore`, `.gitattributes`, thumbnails | Template, unchanged |
+| `script/`, `.gitignore`, `.gitattributes`, thumbnails | Template, unchanged |
 | `mod/.metadata/metadata.json` | Template, filled in |
 | `mod/events/lcs_events.txt`, `mod/common/on_actions/lcs_on_actions.txt` | Template placeholders renamed; mod logic added |
 | `mod/gui/budget_panel.gui`, `mod/gui/construction_panel.gui` | Vanilla 1.15.2 copies + hooks |

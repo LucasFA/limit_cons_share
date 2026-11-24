@@ -141,6 +141,5 @@ Mod prefix: `lcs`.
 
 - [mod](mod): the mod itself
 - [documentation](documentation): documentation that is not shipped with the mod; start with [DEVELOPMENT.md](documentation/DEVELOPMENT.md)
-- [image](image): reference images and templates (from the mod template)
 - [script](script): helper scripts; `generate-localization.sh` copies the English
   localization to the other languages listed in `script/languages.txt`
